@@ -6,7 +6,7 @@ class Entity{
     this.img = new Image(1, 1);
     this.position = {'x':0, 'y':0};
     this.velocity = {'x':0, 'y':0};
-    this.collider = {'offsetX':0, 'offsetY':0, 'w':10 ,'h':10};
+    this.collider = {'offsetX':0, 'offsetY':0, 'w':30 ,'h':30};
 
     this.init();
   }
@@ -53,11 +53,29 @@ class PhysicalEntity extends Entity{
   }
 }
 
+class PlayerEntity extends PhysicalEntity{
+  constructor(inputDevice){
+    super();
+    this.inputDevice = inputDevice;
+  }
+
+  init(){
+    this.loadImg("./res/test.bmp");
+  }
+
+  update(delta){
+    super.update(delta);
+
+    // detect input
+    if(this.inputDevice.upDown){
+      this.velocity.y = -10;
+    }
+    this.velocity.x = ((this.inputDevice.leftDown ? -1 : 0) + (this.inputDevice.rightDown ? 1 : 0)) * 5;
+  }
+}
 
 class TestEntity extends PhysicalEntity{
   init(){
-    this.collider.w = 30;
-    this.collider.h = 30;
     this.loadImg("./res/test.bmp");
   }
 
@@ -69,5 +87,6 @@ class TestEntity extends PhysicalEntity{
 module.exports = {
   Entity:Entity,
   PhysicalEntity:PhysicalEntity,
+  PlayerEntity:PlayerEntity,
   TestEntity:TestEntity
 }
