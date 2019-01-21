@@ -10,7 +10,9 @@ function createWindow(){
 	
 	win.setMenu(null)
 	
-	//win.webContents.openDevTools()
+	//win.webContents.openDevTools();
+	//win.maximize();
+	//win.setFullScreen(true);
 	
 	win.on('closed', () => {
 		win = null

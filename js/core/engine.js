@@ -8,18 +8,20 @@ class Engine{
 	constructor(inputDevice){
 		this.entities = [];
 		this.inputDevice = inputDevice;
+		this.player = new Entities.PlayerEntity(this.inputDevice);
 	}
 
 	// Initialize engine
 	init(){
 		// simple placeholder
-		var player = new Entities.PlayerEntity(this.inputDevice);
 		var entity2 = new Entities.TestEntity();
 
 		var floor = new Entities.PhysicalEntity();
 		var floor2 = new Entities.PhysicalEntity();
+		var floor3 = new Entities.PhysicalEntity();
 
-		player.setPosition(100, 0);
+		this.player.setPosition(100, 0);
+		//this.player.hasGravity = false;
 
 		entity2.setPosition(0, -50);
 
@@ -33,23 +35,30 @@ class Engine{
 		floor2.hasGravity = false;
 		floor2.isStatic = true;
 
-		this.addEntity(player);
-		this.addEntity(entity2);
-		this.addEntity(floor);
-		this.addEntity(floor2);
+		floor3.setPosition(400, 0);
+		floor3.setCollider(100, 500);
+		floor3.hasGravity = false;
+		floor3.isStatic = true;
+
+		this.addAllEntities(entity2, floor, floor2, floor3);
 	}
 
 	// Update engine
 	update(delta){
+		this.player.update(delta);
+		Physics.handleCollision(this.player, this.entities);
+
 		this.entities.forEach((entity) => {
 			entity.update(delta);
 			Physics.handleCollision(entity, this.entities);
 		});
 	}
 
-	// adds entity
-	addEntity(entity){
-		this.entities.push(entity);
+	// adds variable number of entities
+	addAllEntities(){
+		for (var i = 0; i < arguments.length; i++) {
+			this.entities.push(arguments[i]);
+		}
 	}
 }
 
@@ -59,12 +68,9 @@ class Engine{
 class Renderer{
 
 	render(engine, context){
+		engine.player.render(context);
 		engine.entities.forEach(function(entity){
-			context.save();
-			context.drawImage(entity.img, entity.position.x, entity.position.y);
-			context.fillStyle = "rgba(255, 0, 0, 0.5)";
-			context.fillRect(entity.position.x + entity.collider.offsetX, entity.position.y + entity.collider.offsetY, entity.collider.w, entity.collider.h);
-			context.restore();
+			entity.render(context);
 		});
 	}
 }
@@ -73,4 +79,4 @@ class Renderer{
 module.exports = {
 	Engine:Engine,
 	Renderer:Renderer
-}
+};

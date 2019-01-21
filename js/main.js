@@ -23,7 +23,7 @@ function resize(){
 function update(curr){
 	if(!prev) prev = curr;
 	var delta = curr - prev;
-		prev = curr;
+	prev = curr;
 
 	// Update
 	engine.update(delta);

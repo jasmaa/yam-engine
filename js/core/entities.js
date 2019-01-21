@@ -15,6 +15,14 @@ class Entity{
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
   }
+  render(context){
+    context.save();
+    context.drawImage(this.img, this.position.x, this.position.y);
+    // render collider
+    context.fillStyle = "rgba(255, 0, 0, 0.5)";
+    context.fillRect(this.position.x + this.collider.offsetX, this.position.y + this.collider.offsetY, this.collider.w, this.collider.h);
+    context.restore();
+  }
 
   loadImg(path){
     this.img.src = path;
@@ -41,6 +49,7 @@ class PhysicalEntity extends Entity{
     super();
     this.hasGravity = true;
     this.isStatic = false;
+    this.grounded = false;
   }
 
   update(delta){
@@ -49,6 +58,10 @@ class PhysicalEntity extends Entity{
     // do gravity
     if(this.hasGravity){
       this.velocity.y += 1;
+    }
+
+    if(this.velocity.y > 20){
+      this.velocity.y = 20;
     }
   }
 }
@@ -67,8 +80,9 @@ class PlayerEntity extends PhysicalEntity{
     super.update(delta);
 
     // detect input
-    if(this.inputDevice.upDown){
-      this.velocity.y = -10;
+    if(this.inputDevice.upDown && this.grounded){
+      this.velocity.y = -20;
+      this.grounded = false;
     }
     this.velocity.x = ((this.inputDevice.leftDown ? -1 : 0) + (this.inputDevice.rightDown ? 1 : 0)) * 5;
   }
@@ -89,4 +103,4 @@ module.exports = {
   PhysicalEntity:PhysicalEntity,
   PlayerEntity:PlayerEntity,
   TestEntity:TestEntity
-}
+};

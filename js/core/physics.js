@@ -1,68 +1,62 @@
 const Entities = require("./entities.js");
 
 /**
+ * Checks if two colliders are colliding
+ * @param  {[type]}  entity [description]
+ * @param  {[type]}  other  [description]
+ * @return {Boolean}        [description]
+ */
+function isColliding(entity, other) {
+  return (entity.position.x + entity.collider.offsetX < other.position.x + other.collider.offsetX + other.collider.w &&
+    entity.position.x + entity.collider.offsetX + entity.collider.w > other.position.x + other.collider.offsetX &&
+    entity.position.y + entity.collider.offsetY < other.position.y + other.collider.offsetY + other.collider.h &&
+    entity.position.y + entity.collider.offsetY + entity.collider.h > other.position.y + other.collider.offsetY);
+}
+
+/**
  * Does box collision and pushes entity outside of collided area
  * @param  {[type]} entity   [description]
  * @param  {[type]} entities [description]
  * @return {[type]}          [description]
  */
-function handleCollision(entity, entities){
+function handleCollision(entity, entities) {
   // naive collision detection
-  if(entity instanceof Entities.PhysicalEntity && !entity.isStatic){
+  if (entity instanceof Entities.PhysicalEntity && !entity.isStatic) {
     entities.forEach((other) => {
-        if(entity !== other && other instanceof Entities.PhysicalEntity){
-          // check for collision
-          if(entity.position.x + entity.collider.offsetX < other.position.x + other.collider.offsetX + other.collider.w &&
-            entity.position.x + entity.collider.offsetX + entity.collider.w > other.position.x + other.collider.offsetX &&
-            entity.position.y + entity.collider.offsetY < other.position.y + other.collider.offsetY + other.collider.h &&
-            entity.position.y + entity.collider.offsetY + entity.collider.h > other.position.y + other.collider.offsetY){
+      if (entity !== other && other instanceof Entities.PhysicalEntity) {
+        // check for collision
+        if (isColliding(entity, other)) {
 
-              const threshold = 30;
+          const aboveDiff = (other.position.y + other.collider.offsetY + other.collider.h) - (entity.position.y + entity.collider.offsetY);
+          const belowDiff = (other.position.y + other.collider.offsetY) - (entity.position.y + entity.collider.offsetY + entity.collider.h);
+          const rightDiff = (other.position.x + other.collider.offsetX) - (entity.position.x + entity.collider.offsetX + entity.collider.w);
+          const leftDiff = (other.position.x + other.collider.offsetX + other.collider.w) - (entity.position.x + entity.collider.offsetX);
 
-              // hit from above
-              if(entity.position.y + entity.collider.offsetY > other.position.y + other.collider.offsetY){
-                  console.log("hit above");
-                  var diff = (other.position.y + other.collider.offsetY + other.collider.h) - (entity.position.y + entity.collider.offsetY);
-                  if(Math.abs(diff) < threshold){
-                    entity.velocity.y = 0;
-                    entity.position.y += diff;
-                  }
-              }
-              // hit from below
-              else if(entity.position.y + entity.collider.offsetY < other.position.y + other.collider.offsetY){
-                  console.log("hit below");
-                  var diff = (other.position.y + other.collider.offsetY) - (entity.position.y + entity.collider.offsetY + entity.collider.h);
-                  if(Math.abs(diff) < threshold){
-                    entity.velocity.y = 0;
-                    entity.position.y += diff;
-                  }
-              }
+          const minDiff = Math.min(Math.abs(aboveDiff),Math.abs(belowDiff),Math.abs(rightDiff),Math.abs(leftDiff));
 
-              // hit from right side
-              if(entity.position.x + entity.collider.offsetX < other.position.x + other.collider.offsetX){
-                console.log("hit right");
-                var diff = (other.position.x + other.collider.offsetX) - (entity.position.x + entity.collider.offsetX + entity.collider.w);
-                if(Math.abs(diff) < threshold){
-                  entity.velocity.x = 0;
-                  entity.position.x += diff;
-                }
-              }
-              // hit from left side
-              else if(entity.position.x + entity.collider.offsetX > other.position.x + other.collider.offsetX){
-                console.log("hit left");
-                var diff = (other.position.x + other.collider.offsetX + other.collider.w) - (entity.position.x + entity.collider.offsetX);
-                if(Math.abs(diff) < threshold){
-                  entity.velocity.x = 0;
-                  entity.position.x += diff;
-                }
-              }
-
+          if(minDiff == Math.abs(rightDiff)){
+            entity.velocity.x = 0;
+            entity.position.x += rightDiff;
+          }
+          else if(minDiff == Math.abs(leftDiff)){
+            entity.velocity.x = 0;
+            entity.position.x += leftDiff;
+          }
+          else if(minDiff == Math.abs(aboveDiff)){
+            entity.velocity.y = 0;
+            entity.position.y += aboveDiff;
+          }
+          else if(minDiff == Math.abs(belowDiff)){
+            entity.velocity.y = 0;
+            entity.position.y += belowDiff;
+            entity.grounded = true;
           }
         }
-      });
+      }
+    });
   }
 }
 
 module.exports = {
   handleCollision: handleCollision
-}
+};
