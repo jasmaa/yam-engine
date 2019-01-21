@@ -17,11 +17,13 @@ class Engine{
 		var floor = new Entities.PhysicalEntity();
 		var floor2 = new Entities.PhysicalEntity();
 
-		entity1.velocity.y = -2;
-		entity1.setPosition(100, 400);
+		entity1.velocity.x = 2;
+		entity1.setPosition(100, 0);
 
-		floor.setPosition(50, 200);
-		floor.setCollider(300, 100);
+		entity2.velocity.x = 2;
+
+		floor.setPosition(0, 200);
+		floor.setCollider(800, 100);
 		floor.hasGravity = false;
 		floor.isStatic = true;
 
@@ -31,7 +33,7 @@ class Engine{
 		floor2.isStatic = true;
 
 		this.addEntity(entity1);
-		//this.addEntity(entity2);
+		this.addEntity(entity2);
 		this.addEntity(floor);
 		this.addEntity(floor2);
 	}
@@ -53,33 +55,46 @@ class Engine{
 								entity.position.y + entity.collider.offsetY < other.position.y + other.collider.offsetY + other.collider.h &&
 								entity.position.y + entity.collider.offsetY + entity.collider.h > other.position.y + other.collider.offsetY){
 
+									const threshold = 10;
 
-								// hit from right side
-								if(entity.position.x + entity.collider.offsetX < other.position.x + other.collider.offsetX){
-									console.log("hit right");
-									entity.velocity.x = 0;
-									entity.position.x += (other.position.x + other.collider.offsetX) - (entity.position.x + entity.collider.offsetX + entity.collider.w);
-								}
-								// hit from left side
-								else if(entity.position.x + entity.collider.offsetX > other.position.x + other.collider.offsetX){
-									console.log("hit left");
-									entity.velocity.x = 0;
-									entity.position.x += (other.position.x + other.collider.offsetX + other.collider.w) - (entity.position.x + entity.collider.offsetX);
-								}
+									// hit from above
+									if(entity.position.y + entity.collider.offsetY > other.position.y + other.collider.offsetY){
+											console.log("hit above");
+											var diff = (other.position.y + other.collider.offsetY + other.collider.h) - (entity.position.y + entity.collider.offsetY);
+											if(Math.abs(diff) < threshold){
+												entity.velocity.y = 0;
+												entity.position.y += diff;
+											}
+									}
+									// hit from below
+									else if(entity.position.y + entity.collider.offsetY < other.position.y + other.collider.offsetY){
+											console.log("hit below");
+											var diff = (other.position.y + other.collider.offsetY) - (entity.position.y + entity.collider.offsetY + entity.collider.h);
+											if(Math.abs(diff) < threshold){
+												entity.velocity.y = 0;
+												entity.position.y += diff;
+											}
+									}
 
+									// hit from right side
+									if(entity.position.x + entity.collider.offsetX < other.position.x + other.collider.offsetX){
+										console.log("hit right");
+										var diff = (other.position.x + other.collider.offsetX) - (entity.position.x + entity.collider.offsetX + entity.collider.w);
+										if(Math.abs(diff) < threshold){
+											entity.velocity.x = 0;
+											entity.position.x += diff;
+										}
+									}
+									// hit from left side
+									else if(entity.position.x + entity.collider.offsetX > other.position.x + other.collider.offsetX){
+										console.log("hit left");
+										var diff = (other.position.x + other.collider.offsetX + other.collider.w) - (entity.position.x + entity.collider.offsetX);
+										if(Math.abs(diff) < threshold){
+											entity.velocity.x = 0;
+											entity.position.x += diff;
+										}
+									}
 
-								// hit from above
-								if(entity.position.y + entity.collider.offsetY > other.position.y + other.collider.offsetY){
-										console.log("hit above");
-										entity.velocity.y = 0;
-										entity.position.y += (other.position.y + other.collider.offsetY + other.collider.h) - (entity.position.y + entity.collider.offsetY);
-								}
-								// hit from below
-								else if(entity.position.y + entity.collider.offsetY < other.position.y + other.collider.offsetY){
-										console.log("hit below");
-										entity.velocity.y = 0;
-										entity.position.y += (other.position.y + other.collider.offsetY) - (entity.position.y + entity.collider.offsetY + entity.collider.h);
-								}
 							}
 						}
 					});

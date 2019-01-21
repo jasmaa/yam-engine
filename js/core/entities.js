@@ -39,7 +39,7 @@ class Entity{
 class PhysicalEntity extends Entity{
   constructor(){
     super();
-    this.hasGravity = false;
+    this.hasGravity = true;
     this.isStatic = false;
   }
 
