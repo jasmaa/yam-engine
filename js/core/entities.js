@@ -3,27 +3,71 @@
  */
 class Entity{
   constructor(){
-    this.collider = {'x':0, 'y':0, 'w':10 ,'h':10};
+    this.img = new Image(1, 1);
+    this.position = {'x':0, 'y':0};
+    this.velocity = {'x':0, 'y':0};
+    this.collider = {'offsetX':0, 'offsetY':0, 'w':10 ,'h':10};
+
+    this.init();
   }
   init(){}
-  update(delta){}
+  update(delta){
+    this.position.x += this.velocity.x;
+    this.position.y += this.velocity.y;
+  }
+
+  loadImg(path){
+    this.img.src = path;
+  }
+
+  setPosition(x, y){
+    this.position.x = x;
+    this.position.y = y;
+  }
+  setCollider(w, h, offsetX=0, offsetY=0){
+    this.collider.w = w;
+    this.collider.h = h;
+    this.collider.offsetX = offsetX;
+    this.collider.offsetY = offsetY;
+  }
 }
 
 /**
- * Testing
+ * Collidable entity
  * @extends Entity
  */
-class TestEntity extends Entity{
-  init(){
-    this.collider = {'x':0, 'y':0, 'w':30 ,'h':30};
+class PhysicalEntity extends Entity{
+  constructor(){
+    super();
+    this.hasGravity = false;
+    this.isStatic = false;
   }
 
   update(delta){
-    this.collider.x = (this.collider.x + 10) % 300
+    super.update(delta);
+
+    // do gravity
+    if(this.hasGravity){
+      this.velocity.y += 1;
+    }
+  }
+}
+
+
+class TestEntity extends PhysicalEntity{
+  init(){
+    this.collider.w = 30;
+    this.collider.h = 30;
+    this.loadImg("./res/test.bmp");
+  }
+
+  update(delta){
+    super.update(delta);
   }
 }
 
 module.exports = {
   Entity:Entity,
+  PhysicalEntity:PhysicalEntity,
   TestEntity:TestEntity
 }
