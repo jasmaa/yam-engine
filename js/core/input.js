@@ -1,4 +1,7 @@
 
+/**
+ * Generic input device
+ */
 class InputDevice{
   constructor(){
     this.leftDown = false;

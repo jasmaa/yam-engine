@@ -29,14 +29,28 @@ class Entity{
     context.restore();
   }
 
+  // TEMP: set image
   loadImg(path){
     this.img.src = path;
   }
 
+  /**
+   * Set position of entity
+   * @param {[type]} x [description]
+   * @param {[type]} y [description]
+   */
   setPosition(x, y){
     this.position.x = x;
     this.position.y = y;
   }
+
+  /**
+   * Set collider params
+   * @param {[type]} w           [description]
+   * @param {[type]} h           [description]
+   * @param {Number} [offsetX=0] [description]
+   * @param {Number} [offsetY=0] [description]
+   */
   setCollider(w, h, offsetX=0, offsetY=0){
     this.collider.w = w;
     this.collider.h = h;
@@ -116,25 +130,36 @@ class PlayerEntity extends PhysicalEntity{
   }
 }
 
+/**
+ * Camera that follows player
+ */
 class Camera{
-  constructor(player){
+  constructor(player, screenDim){
     this.position = {'x':0, 'y':0};
-    this.scrollBounds = {'x1':0, 'y1':0, 'x2':9000, 'y2':9000};
+    this.offset = {'x':0, 'y':0};
+    this.scrollBounds = {'x1':-500, 'y1':-500, 'x2':500, 'y2':500};
     this.player = player;
+    this.screenDim = screenDim;
   }
 
   update(delta){
 
-    if(!this.oldPos) this.oldPos = {'x':this.player.position.x, 'y':this.player.position.y};
+    this.position.x = this.player.position.x - this.screenDim.w / 2 + this.player.collider.w / 2 + this.offset.x;
+    this.position.y = this.player.position.y - this.screenDim.h / 2 + this.player.collider.h / 2 + this.offset.y;
 
-    // follow player
-    const deltaX = this.player.position.x - this.oldPos.x;
-    const deltaY = this.player.position.y - this.oldPos.y;
-
-    this.position.x += deltaX;
-    this.position.y += deltaY;
-
-    this.oldPos = {'x':this.player.position.x, 'y':this.player.position.y};
+    // lock cam within bounds
+    if(this.position.x < this.scrollBounds.x1){
+      this.position.x = this.scrollBounds.x1;
+    }
+    if(this.position.x > this.scrollBounds.x2){
+      this.position.x = this.scrollBounds.x2;
+    }
+    if(this.position.y < this.scrollBounds.y1){
+      this.position.y = this.scrollBounds.y1;
+    }
+    if(this.position.y > this.scrollBounds.y2){
+      this.position.y = this.scrollBounds.y2;
+    }
   }
 }
 

@@ -1,52 +1,28 @@
-const Entities = require("./entities.js");
-const Physics = require("./physics.js");
+const Entities = require('./entities.js');
+const Physics = require('./physics.js');
+const ResourceLoader = require('./resourceLoader.js');
 
 /**
  * Main engine
  */
 class Engine{
-	constructor(inputDevice){
+	constructor(inputDevice, screenDim){
 		this.entities = [];
 		this.inputDevice = inputDevice;
+		this.screenDim = screenDim;
 		this.player = new Entities.PlayerEntity(this.inputDevice);
-		this.camera = new Entities.Camera(this.player);
+		this.camera = new Entities.Camera(this.player, screenDim);
 	}
 
 	// Initialize engine
 	init(){
-		// simple placeholder
-		var entity2 = new Entities.Entity();
-
-		var floor = new Entities.PhysicalEntity();
-		var floor2 = new Entities.PhysicalEntity();
-		var floor3 = new Entities.PhysicalEntity();
-
+		// simple test
 		this.player.setPosition(300, 200);
-		//this.player.hasGravity = false;
-
-		entity2.setPosition(0, -50);
-
-		floor.setPosition(0, 400);
-		floor.setCollider(800, 100);
-		floor.hasGravity = false;
-		floor.isStatic = true;
-
-		floor2.setPosition(200, 300);
-		floor2.setCollider(100, 30);
-		floor2.hasGravity = false;
-		floor2.isStatic = true;
-
-		floor3.setPosition(400, 300);
-		floor3.setCollider(300, 100);
-		floor3.hasGravity = false;
-		floor3.isStatic = true;
-
-		this.addAllEntities(entity2, floor, floor2, floor3);
+		this.loadMap('res/map.json');
 	}
 
 	// Update engine
 	update(delta){
-
 		this.camera.update(delta);
 
 		this.player.update(delta);
@@ -58,11 +34,29 @@ class Engine{
 		});
 	}
 
-	// adds variable number of entities
+	/**
+	 * Adds variable number of entities
+	 */
 	addAllEntities(){
 		for (var i = 0; i < arguments.length; i++) {
 			this.entities.push(arguments[i]);
 		}
+	}
+
+	/**
+	 * Load in platforms as static entities
+	 * @param  {[type]} path [description]
+	 * @return {[type]}      [description]
+	 */
+	loadMap(path){
+		ResourceLoader.readJSON(path).forEach((data) => {
+			var obj = new Entities.PhysicalEntity();
+			obj.setPosition(data.x, data.y);
+			obj.setCollider(data.w, data.h);
+			obj.hasGravity = false;
+			obj.isStatic = true;
+			this.addAllEntities(obj);
+		});
 	}
 }
 
