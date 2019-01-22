@@ -15,12 +15,17 @@ class Entity{
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
   }
-  render(context){
+  render(context, camera){
     context.save();
-    context.drawImage(this.img, this.position.x, this.position.y);
+    context.drawImage(this.img, this.position.x - camera.position.x, this.position.y - camera.position.y);
     // render collider
     context.fillStyle = "rgba(255, 0, 0, 0.5)";
-    context.fillRect(this.position.x + this.collider.offsetX, this.position.y + this.collider.offsetY, this.collider.w, this.collider.h);
+    context.fillRect(
+      this.position.x + this.collider.offsetX - camera.position.x,
+      this.position.y + this.collider.offsetY - camera.position.y,
+      this.collider.w,
+      this.collider.h
+    );
     context.restore();
   }
 
@@ -50,6 +55,8 @@ class PhysicalEntity extends Entity{
     this.hasGravity = true;
     this.isStatic = false;
     this.grounded = false;
+
+    this.gravity = 1;
   }
 
   update(delta){
@@ -57,7 +64,7 @@ class PhysicalEntity extends Entity{
 
     // do gravity
     if(this.hasGravity){
-      this.velocity.y += 1;
+      this.velocity.y += this.gravity;
     }
 
     if(this.velocity.y > 20){
@@ -66,35 +73,68 @@ class PhysicalEntity extends Entity{
   }
 }
 
+/**
+ * Controllable physics entity
+ * @extends PhysicalEntity
+ */
 class PlayerEntity extends PhysicalEntity{
   constructor(inputDevice){
     super();
     this.inputDevice = inputDevice;
-  }
 
-  init(){
     this.loadImg("./res/test.bmp");
   }
 
   update(delta){
     super.update(delta);
 
-    // detect input
-    if(this.inputDevice.upDown && this.grounded){
-      this.velocity.y = -20;
-      this.grounded = false;
+    if(this.inputDevice.secondaryDown){
+      // jump
+      if(this.grounded){
+        this.velocity.y = -10;
+        this.grounded = false;
+      }
+      else{
+        // lighten gravity for higher jumps
+        this.gravity *= 0.8;
+        if(this.gravity <= 0.4){
+          this.gravity = 0.4;
+        }
+      }
     }
-    this.velocity.x = ((this.inputDevice.leftDown ? -1 : 0) + (this.inputDevice.rightDown ? 1 : 0)) * 5;
+
+    // reset gravity on fall
+    if(this.velocity.y >= 0){
+      this.gravity /= 0.8;
+      if(this.gravity >= 1){
+        this.gravity = 1;
+      }
+    }
+
+    // horizontal movement
+    this.velocity.x = ((this.inputDevice.leftDown ? -1 : 0) + (this.inputDevice.rightDown ? 1 : 0)) * 3;
   }
 }
 
-class TestEntity extends PhysicalEntity{
-  init(){
-    this.loadImg("./res/test.bmp");
+class Camera{
+  constructor(player){
+    this.position = {'x':0, 'y':0};
+    this.scrollBounds = {'x1':0, 'y1':0, 'x2':9000, 'y2':9000};
+    this.player = player;
   }
 
   update(delta){
-    super.update(delta);
+
+    if(!this.oldPos) this.oldPos = {'x':this.player.position.x, 'y':this.player.position.y};
+
+    // follow player
+    const deltaX = this.player.position.x - this.oldPos.x;
+    const deltaY = this.player.position.y - this.oldPos.y;
+
+    this.position.x += deltaX;
+    this.position.y += deltaY;
+
+    this.oldPos = {'x':this.player.position.x, 'y':this.player.position.y};
   }
 }
 
@@ -102,5 +142,5 @@ module.exports = {
   Entity:Entity,
   PhysicalEntity:PhysicalEntity,
   PlayerEntity:PlayerEntity,
-  TestEntity:TestEntity
+  Camera:Camera
 };

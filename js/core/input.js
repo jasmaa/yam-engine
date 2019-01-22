@@ -32,10 +32,10 @@ class KeyboardDevice extends InputDevice{
   			case 40:
   				this.downDown = true;
   				break;
-  			case 120:
+  			case 88:
   				this.primaryDown = true;
   				break;
-  			case 122:
+  			case 90:
   				this.secondaryDown = true;
   				break;
   		}
@@ -54,10 +54,10 @@ class KeyboardDevice extends InputDevice{
   			case 40:
   				this.downDown = false;
   				break;
-  			case 120:
+  			case 88:
   				this.primaryDown = false;
   				break;
-  			case 122:
+  			case 90:
   				this.secondaryDown = false;
   				break;
   		}

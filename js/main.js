@@ -31,7 +31,7 @@ function update(curr){
 	// draw to canvas
 	context.clearRect(0, 0, canvas.width, canvas.height);
 	context.fillText("FPS: " + (1 / delta * 1000), 10, 50);
-	context.fillText("up: " + inputDevice.upDown, 10, 80);
+	context.fillText(engine.camera.position.x, 10, 80);
 	renderer.render(engine, context);
 
 	window.requestAnimationFrame(update);
@@ -45,7 +45,7 @@ function init(){
 
 	inputDevice = new Input.KeyboardDevice();
 	engine = new Engine.Engine(inputDevice);
-	renderer = new Engine.Renderer();
+	renderer = new Engine.Renderer(engine.camera);
 
 	engine.init();
 

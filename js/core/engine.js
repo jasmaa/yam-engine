@@ -9,18 +9,19 @@ class Engine{
 		this.entities = [];
 		this.inputDevice = inputDevice;
 		this.player = new Entities.PlayerEntity(this.inputDevice);
+		this.camera = new Entities.Camera(this.player);
 	}
 
 	// Initialize engine
 	init(){
 		// simple placeholder
-		var entity2 = new Entities.TestEntity();
+		var entity2 = new Entities.Entity();
 
 		var floor = new Entities.PhysicalEntity();
 		var floor2 = new Entities.PhysicalEntity();
 		var floor3 = new Entities.PhysicalEntity();
 
-		this.player.setPosition(100, 0);
+		this.player.setPosition(300, 200);
 		//this.player.hasGravity = false;
 
 		entity2.setPosition(0, -50);
@@ -35,8 +36,8 @@ class Engine{
 		floor2.hasGravity = false;
 		floor2.isStatic = true;
 
-		floor3.setPosition(400, 0);
-		floor3.setCollider(100, 500);
+		floor3.setPosition(400, 300);
+		floor3.setCollider(300, 100);
 		floor3.hasGravity = false;
 		floor3.isStatic = true;
 
@@ -45,6 +46,9 @@ class Engine{
 
 	// Update engine
 	update(delta){
+
+		this.camera.update(delta);
+
 		this.player.update(delta);
 		Physics.handleCollision(this.player, this.entities);
 
@@ -67,10 +71,14 @@ class Engine{
  */
 class Renderer{
 
+	constructor(camera){
+		this.camera = camera;
+	}
+
 	render(engine, context){
-		engine.player.render(context);
-		engine.entities.forEach(function(entity){
-			entity.render(context);
+		engine.player.render(context, this.camera);
+		engine.entities.forEach((entity) => {
+			entity.render(context, this.camera);
 		});
 	}
 }
