@@ -1,6 +1,7 @@
 const Entities = require('./entities.js');
 const Physics = require('./physics.js');
-const ResourceLoader = require('./resourceLoader.js');
+const ResourceLoad = require('./resourceLoader.js');
+const Anim = require('./animation.js');
 
 /**
  * Main engine
@@ -10,15 +11,44 @@ class Engine{
 		this.entities = [];
 		this.inputDevice = inputDevice;
 		this.screenDim = screenDim;
-		this.player = new Entities.PlayerEntity(this.inputDevice);
+		this.player = new Entities.BasicPlayerEntity(this.inputDevice);
 		this.camera = new Entities.Camera(this.player, screenDim);
+
+		this.sheetStore = new ResourceLoad.SheetStore();
 	}
 
 	// Initialize engine
 	init(){
 		// simple test
-		this.player.setPosition(300, 200);
 		this.loadMap('res/map.json');
+		this.sheetStore.loadSheet(
+			"mario",
+			"res/sample/mario.png",
+			"res/sample/marioSprites.txt"
+		);
+
+		this.player.setPosition(300, 200);
+		this.player.currSprite = this.sheetStore.getSprite("mario02");
+
+		// add timings later...
+		var idleAnim = this.player.animController.getAnimation("Idle");
+		idleAnim.looping = true;
+		idleAnim.addFrame(this.sheetStore.getSprite("mario01"));
+		idleAnim.addFrame(this.sheetStore.getSprite("mario01"));
+		idleAnim.addFrame(this.sheetStore.getSprite("mario01"));
+		idleAnim.addFrame(this.sheetStore.getSprite("mario01"));
+		idleAnim.addFrame(this.sheetStore.getSprite("mario02"));
+		idleAnim.addFrame(this.sheetStore.getSprite("mario02"));
+		idleAnim.addFrame(this.sheetStore.getSprite("mario02"));
+		idleAnim.addFrame(this.sheetStore.getSprite("mario02"));
+		idleAnim.addFrame(this.sheetStore.getSprite("mario03"));
+		idleAnim.addFrame(this.sheetStore.getSprite("mario03"));
+		idleAnim.addFrame(this.sheetStore.getSprite("mario03"));
+		idleAnim.addFrame(this.sheetStore.getSprite("mario03"));
+		idleAnim.addFrame(this.sheetStore.getSprite("mario04"));
+		idleAnim.addFrame(this.sheetStore.getSprite("mario04"));
+		idleAnim.addFrame(this.sheetStore.getSprite("mario04"));
+		idleAnim.addFrame(this.sheetStore.getSprite("mario04"));
 	}
 
 	// Update engine
@@ -36,6 +66,7 @@ class Engine{
 
 	/**
 	 * Adds variable number of entities
+	 * @param  {[type]} args entities to add
 	 */
 	addAllEntities(){
 		for (var i = 0; i < arguments.length; i++) {
@@ -49,7 +80,7 @@ class Engine{
 	 * @return {[type]}      [description]
 	 */
 	loadMap(path){
-		ResourceLoader.readJSON(path).forEach((data) => {
+		ResourceLoad.readJSON(path).forEach((data) => {
 			var obj = new Entities.PhysicalEntity();
 			obj.setPosition(data.x, data.y);
 			obj.setCollider(data.w, data.h);

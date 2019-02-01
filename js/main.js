@@ -10,7 +10,7 @@ var renderer;
 var inputDevice;
 var prev = null;
 
-const screenDim = {'w':800, 'h':400};
+const screenDim = {'w':640, 'h':360};
 
 /**
  * Resize canvas without keeping ratio

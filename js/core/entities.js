@@ -1,23 +1,32 @@
+var Anim = require('./animation.js');
+
 /**
  * Base entity
  */
 class Entity{
   constructor(){
-    this.img = new Image(1, 1);
     this.position = {'x':0, 'y':0};
     this.velocity = {'x':0, 'y':0};
     this.collider = {'offsetX':0, 'offsetY':0, 'w':30 ,'h':30};
+    this.currSprite = null;
 
     this.init();
   }
+
   init(){}
+
   update(delta){
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
   }
+
   render(context, camera){
     context.save();
-    context.drawImage(this.img, this.position.x - camera.position.x, this.position.y - camera.position.y);
+
+    // render sprite
+    if(this.currSprite)
+      this.currSprite.render(context, camera, this.position);
+
     // render collider
     context.fillStyle = "rgba(255, 0, 0, 0.5)";
     context.fillRect(
@@ -27,11 +36,6 @@ class Entity{
       this.collider.h
     );
     context.restore();
-  }
-
-  // TEMP: set image
-  loadImg(path){
-    this.img.src = path;
   }
 
   /**
@@ -88,19 +92,29 @@ class PhysicalEntity extends Entity{
 }
 
 /**
- * Controllable physics entity
+ * Basic controllable physics entity
  * @extends PhysicalEntity
  */
-class PlayerEntity extends PhysicalEntity{
+class BasicPlayerEntity extends PhysicalEntity{
   constructor(inputDevice){
     super();
     this.inputDevice = inputDevice;
+    this.animController = new Anim.AnimationController();
 
-    this.loadImg("./res/test.bmp");
+    // Set up animations
+    this.animController.addAnimation("Idle");
+    this.animController.addAnimation("Walk");
+    this.animController.addAnimation("Jump");
+
+    this.animController.setCurrent("Idle");
+    this.animController.play();
   }
 
   update(delta){
     super.update(delta);
+
+    this.animController.update(delta);
+    this.currSprite = this.animController.getSprite();
 
     if(this.inputDevice.secondaryDown){
       // jump
@@ -137,7 +151,7 @@ class Camera{
   constructor(player, screenDim){
     this.position = {'x':0, 'y':0};
     this.offset = {'x':0, 'y':0};
-    this.scrollBounds = {'x1':-500, 'y1':-500, 'x2':500, 'y2':500};
+    this.scrollBounds = {'x1':-9000, 'y1':-9000, 'x2':9000, 'y2':9000};
     this.player = player;
     this.screenDim = screenDim;
   }
@@ -166,6 +180,6 @@ class Camera{
 module.exports = {
   Entity:Entity,
   PhysicalEntity:PhysicalEntity,
-  PlayerEntity:PlayerEntity,
+  BasicPlayerEntity:BasicPlayerEntity,
   Camera:Camera
 };
