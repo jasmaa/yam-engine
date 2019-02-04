@@ -1,0 +1,10 @@
+BEGIN Walk 1
+mario01
+mario02
+mario03
+mario04
+END
+
+BEGIN Idle 0
+mario01
+END

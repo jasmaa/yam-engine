@@ -15,6 +15,7 @@ class Engine{
 		this.camera = new Entities.Camera(this.player, screenDim);
 
 		this.sheetStore = new ResourceLoad.SheetStore();
+		this.animStore = new ResourceLoad.AnimStore();
 	}
 
 	// Initialize engine
@@ -27,28 +28,14 @@ class Engine{
 			"res/sample/marioSprites.txt"
 		);
 
+		this.animStore.loadAnim(this.sheetStore, "res/sample/anim.txt");
+
 		this.player.setPosition(300, 200);
 		this.player.currSprite = this.sheetStore.getSprite("mario02");
 
 		// add timings later...
-		var idleAnim = this.player.animController.getAnimation("Idle");
-		idleAnim.looping = true;
-		idleAnim.addFrame(this.sheetStore.getSprite("mario01"));
-		idleAnim.addFrame(this.sheetStore.getSprite("mario01"));
-		idleAnim.addFrame(this.sheetStore.getSprite("mario01"));
-		idleAnim.addFrame(this.sheetStore.getSprite("mario01"));
-		idleAnim.addFrame(this.sheetStore.getSprite("mario02"));
-		idleAnim.addFrame(this.sheetStore.getSprite("mario02"));
-		idleAnim.addFrame(this.sheetStore.getSprite("mario02"));
-		idleAnim.addFrame(this.sheetStore.getSprite("mario02"));
-		idleAnim.addFrame(this.sheetStore.getSprite("mario03"));
-		idleAnim.addFrame(this.sheetStore.getSprite("mario03"));
-		idleAnim.addFrame(this.sheetStore.getSprite("mario03"));
-		idleAnim.addFrame(this.sheetStore.getSprite("mario03"));
-		idleAnim.addFrame(this.sheetStore.getSprite("mario04"));
-		idleAnim.addFrame(this.sheetStore.getSprite("mario04"));
-		idleAnim.addFrame(this.sheetStore.getSprite("mario04"));
-		idleAnim.addFrame(this.sheetStore.getSprite("mario04"));
+		this.player.animController.setAnimation("Walk", this.animStore.getAnim("Walk"))
+		this.player.animController.setAnimation("Idle", this.animStore.getAnim("Idle"))
 	}
 
 	// Update engine

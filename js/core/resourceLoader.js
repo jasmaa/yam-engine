@@ -38,11 +38,43 @@ class SheetStore{
   getSprite(name){
     return this.sprites[name];
   }
+}
 
+class AnimStore {
+  constructor(){
+    this.animations = {};
+  }
 
+  loadAnim(sheetStore, infoPath){
+    var anim;
+    var name;
+
+    // read in anim data
+    fs.readFileSync(infoPath, 'utf8').split("\n").forEach(line => {
+      var data = line.split(" ");
+
+      if(data[0].trim() == "BEGIN"){
+        anim = new Anim.Animation();
+        name = data[1].trim();
+        anim.looping = data[2].trim() == 1;
+      }
+      else if(data[0].trim() == "END"){
+          this.animations[name] = anim;
+          anim = null;
+      }
+      else if(anim){
+        anim.addFrame(sheetStore.getSprite(data[0].trim()));
+      }
+    });
+  }
+
+  getAnim(name){
+    return this.animations[name];
+  }
 }
 
 module.exports = {
   readJSON:readJSON,
-  SheetStore:SheetStore
+  SheetStore:SheetStore,
+  AnimStore:AnimStore
 };

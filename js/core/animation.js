@@ -35,9 +35,10 @@ class Sprite {
  * Data for a set of animation frames
  */
 class Animation {
-  constructor(name){
+  constructor(){
     this.frameNum = 0;
     this.frames = [];     // array of sprite frames
+    this.timings = [];    // array of frame timings
     this.looping = false;
   }
 
@@ -56,7 +57,7 @@ class Animation {
   next(){
     this.frameNum++;
     if(!this.looping && this.frameNum >= this.getTotalFrames()){
-      this.frameNum = this.getTotalFrames - 1;
+      this.frameNum = this.getTotalFrames() - 1;
     }
     else{
       this.frameNum %= this.getTotalFrames();
@@ -126,9 +127,13 @@ class AnimationController {
     return this.animations[name];
   }
 
+  setAnimation(name, anim){
+    this.animations[name] = anim;
+  }
+
   setCurrent(name){
-    if(this.animations[this.currAnim])
-      this.animations[this.currAnim].reset();
+    //if(this.animations[this.currAnim])
+    //  this.animations[this.currAnim].reset();
     this.currAnim = name;
   }
 

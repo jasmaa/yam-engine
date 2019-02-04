@@ -116,8 +116,17 @@ class BasicPlayerEntity extends PhysicalEntity{
     this.animController.update(delta);
     this.currSprite = this.animController.getSprite();
 
+    // animation
+    if(this.velocity.x != 0){
+      this.animController.setCurrent("Walk");
+    }
+    else{
+      this.animController.setCurrent("Idle");
+    }
+
+    // jump
     if(this.inputDevice.secondaryDown){
-      // jump
+
       if(this.grounded){
         this.velocity.y = -10;
         this.grounded = false;
