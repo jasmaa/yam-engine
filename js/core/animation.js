@@ -1,5 +1,15 @@
 
 /**
+ * Animation controller states
+ * @type {Object}
+ */
+ const ControllerState = {
+   PLAY:0,
+   PAUSE:1,
+   REVERSE:2
+ };
+
+/**
  * Sprite data
  */
 class Sprite {
@@ -79,16 +89,6 @@ class Animation {
     this.frameNum = 0;
   }
 }
-
-/**
- * Animation controller states
- * @type {Object}
- */
- const ControllerState = {
-   PLAY:0,
-   PAUSE:1,
-   REVERSE:2
- };
 
  /**
   * Controls animations

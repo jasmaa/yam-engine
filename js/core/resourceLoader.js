@@ -10,6 +10,9 @@ function readJSON(path){
   return JSON.parse(fs.readFileSync(path, 'utf8'));
 }
 
+/**
+ * Stores sprites from a spritesheet
+ */
 class SheetStore{
   constructor(){
     this.sheets = {};
@@ -40,6 +43,9 @@ class SheetStore{
   }
 }
 
+/**
+ * Stores animations
+ */
 class AnimStore {
   constructor(){
     this.animations = {};

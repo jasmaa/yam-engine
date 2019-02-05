@@ -8,3 +8,7 @@ END
 BEGIN Idle 0
 mario01
 END
+
+BEGIN Jump 0
+mario05
+END

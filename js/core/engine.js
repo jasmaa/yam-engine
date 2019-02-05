@@ -8,13 +8,14 @@ const Anim = require('./animation.js');
  */
 class Engine{
 	constructor(inputDevice, screenDim){
-		this.entities = [];
+		this.staticEntities = [];
+		this.projectileEntities = [];
 		this.inputDevice = inputDevice;
 		this.screenDim = screenDim;
-		this.player = new Entities.BasicPlayerEntity(this.inputDevice);
+		this.player = new Entities.BasicPlayerEntity(this.inputDevice, this.projectileEntities);
 		this.camera = new Entities.Camera(this.player, screenDim);
 
-		this.sheetStore = new ResourceLoad.SheetStore();
+		this.sheetStore = new ResourceLoad.SheetStore();	// do for more sheets later
 		this.animStore = new ResourceLoad.AnimStore();
 	}
 
@@ -22,6 +23,7 @@ class Engine{
 	init(){
 		// simple test
 		this.loadMap('res/map.json');
+
 		this.sheetStore.loadSheet(
 			"mario",
 			"res/sample/mario.png",
@@ -34,8 +36,9 @@ class Engine{
 		this.player.currSprite = this.sheetStore.getSprite("mario02");
 
 		// add timings later...
-		this.player.animController.setAnimation("Walk", this.animStore.getAnim("Walk"))
-		this.player.animController.setAnimation("Idle", this.animStore.getAnim("Idle"))
+		this.player.animController.setAnimation("Walk", this.animStore.getAnim("Walk"));
+		this.player.animController.setAnimation("Idle", this.animStore.getAnim("Idle"));
+		this.player.animController.setAnimation("Jump", this.animStore.getAnim("Jump"));
 	}
 
 	// Update engine
@@ -43,22 +46,33 @@ class Engine{
 		this.camera.update(delta);
 
 		this.player.update(delta);
-		Physics.handleCollision(this.player, this.entities);
+		Physics.handleCollision(this.player, this.staticEntities);
 
-		this.entities.forEach((entity) => {
+		/*
+		this.staticEntities.forEach((entity) => {
 			entity.update(delta);
-			Physics.handleCollision(entity, this.entities);
+			Physics.handleCollision(entity, this.staticEntities);
+		});
+		*/
+
+		this.projectileEntities.forEach((entity) => {
+			entity.update(delta);
+			//Physics.handleProjectileCollision(entity, this.staticEntities);
+
+			// kill object
+			if(!entity.alive || entity.hit){
+				this.projectileEntities.splice(this.projectileEntities.indexOf(entity), 1);
+			}
 		});
 	}
 
 	/**
 	 * Adds variable number of entities
-	 * @param  {[type]} args entities to add
+	 * @param  {[type]} entities entity list to add to
+	 * @param  {[type]} arg entities to add
 	 */
-	addAllEntities(){
-		for (var i = 0; i < arguments.length; i++) {
-			this.entities.push(arguments[i]);
-		}
+	addEntity(entities, arg){
+		entities.push(arg);
 	}
 
 	/**
@@ -73,7 +87,7 @@ class Engine{
 			obj.setCollider(data.w, data.h);
 			obj.hasGravity = false;
 			obj.isStatic = true;
-			this.addAllEntities(obj);
+			this.addEntity(this.staticEntities, obj);
 		});
 	}
 }
@@ -89,7 +103,10 @@ class Renderer{
 
 	render(engine, context){
 		engine.player.render(context, this.camera);
-		engine.entities.forEach((entity) => {
+		engine.staticEntities.forEach((entity) => {
+			entity.render(context, this.camera);
+		});
+		engine.projectileEntities.forEach((entity) => {
 			entity.render(context, this.camera);
 		});
 	}

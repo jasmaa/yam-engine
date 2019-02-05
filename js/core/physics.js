@@ -57,6 +57,24 @@ function handleCollision(entity, entities) {
   }
 }
 
+/**
+ * Handles collision with projectile and enemy
+ * @param  {[type]} entity   [description]
+ * @param  {[type]} entities [description]
+ * @return {[type]}          [description]
+ */
+function handleProjectileCollision(entity, entities){
+  entities.forEach((other) => {
+    if (other instanceof Entities.EnemyEntity) {
+      // check for collision
+      if (isColliding(entity, other)) {
+        entity.hit = true;
+      }
+    }
+  });
+}
+
 module.exports = {
-  handleCollision: handleCollision
+  handleCollision: handleCollision,
+  handleProjectileCollision: handleProjectileCollision
 };
