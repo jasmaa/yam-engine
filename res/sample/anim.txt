@@ -1,14 +1,23 @@
 BEGIN Walk 1
-mario01
-mario02
-mario03
-mario04
+mario_walk_01
+mario_walk_01
+mario_walk_02
+mario_walk_02
+mario_walk_03
+mario_walk_03
+mario_walk_04
+mario_walk_04
 END
 
 BEGIN Idle 0
-mario01
+mario_walk_01
 END
 
 BEGIN Jump 0
-mario05
+mario_jump
+END
+
+
+BEGIN Ball 0
+ball
 END

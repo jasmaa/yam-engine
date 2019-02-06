@@ -10,6 +10,7 @@ class Engine{
 	constructor(inputDevice, screenDim){
 		this.staticEntities = [];
 		this.projectileEntities = [];
+		this.enemyEntities = [];
 		this.inputDevice = inputDevice;
 		this.screenDim = screenDim;
 		this.player = new Entities.BasicPlayerEntity(this.inputDevice, this.projectileEntities);
@@ -26,19 +27,20 @@ class Engine{
 
 		this.sheetStore.loadSheet(
 			"mario",
-			"res/sample/mario.png",
+			"res/sample/sprites0000.png",
 			"res/sample/marioSprites.txt"
 		);
 
 		this.animStore.loadAnim(this.sheetStore, "res/sample/anim.txt");
 
 		this.player.setPosition(300, 200);
-		this.player.currSprite = this.sheetStore.getSprite("mario02");
+		this.player.currSprite = this.sheetStore.getSprite("mario_walk_01");
+		this.player.projectileSprite = this.sheetStore.getSprite("ball");
 
 		// add timings later...
 		this.player.animController.setAnimation("Walk", this.animStore.getAnim("Walk"));
-		this.player.animController.setAnimation("Idle", this.animStore.getAnim("Idle"));
 		this.player.animController.setAnimation("Jump", this.animStore.getAnim("Jump"));
+		this.player.animController.setAnimation("Idle", this.animStore.getAnim("Idle"));
 	}
 
 	// Update engine
@@ -57,7 +59,7 @@ class Engine{
 
 		this.projectileEntities.forEach((entity) => {
 			entity.update(delta);
-			//Physics.handleProjectileCollision(entity, this.staticEntities);
+			Physics.handleProjectileCollision(entity, this.enemyEntities);
 
 			// kill object
 			if(!entity.alive || entity.hit){

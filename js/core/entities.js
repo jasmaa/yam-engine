@@ -15,9 +15,8 @@ class Entity{
     this.velocity = {'x':0, 'y':0};
     this.collider = {'offsetX':0, 'offsetY':0, 'w':30 ,'h':30};
     this.currSprite = null;
-    this.flippedX = true;
-    this.flippedY = false;
-
+    this.flipX = false;
+    this.flipY = false;
     this.init();
   }
 
@@ -29,12 +28,13 @@ class Entity{
   }
 
   render(context, camera){
-    context.save();
 
     // render sprite
     if(this.currSprite){
-      this.currSprite.render(context, camera, this.position);
+      this.currSprite.render(context, camera, this.position, this.flipX, this.flipY);
     }
+
+    context.save();
 
     // render collider
     context.fillStyle = "rgba(255, 0, 0, 0.5)";
@@ -77,8 +77,10 @@ class Entity{
  * @extends Entity
  */
 class ProjectileEntity extends Entity {
-  constructor(speed){
+  constructor(currSprite, speed){
     super();
+    this.collider = {'offsetX':0, 'offsetY':0, 'w':16 ,'h':16};
+    this.currSprite = currSprite;
     this.velocity.x = speed;
     this.lifetime = 0;
     this.alive = true;
@@ -133,6 +135,7 @@ class PhysicalEntity extends Entity{
 class BasicPlayerEntity extends PhysicalEntity{
   constructor(inputDevice, projectileEntities){
     super();
+    this.collider = {'offsetX':0, 'offsetY':0, 'w':16 ,'h':32};
     this.inputDevice = inputDevice;
     this.projectileEntities = projectileEntities;
 
@@ -141,6 +144,7 @@ class BasicPlayerEntity extends PhysicalEntity{
     this.animController.addAnimation("Idle");
     this.animController.addAnimation("Walk");
     this.animController.addAnimation("Jump");
+
     this.animController.setCurrent("Idle");
     this.animController.play();
 
@@ -154,9 +158,12 @@ class BasicPlayerEntity extends PhysicalEntity{
     this.animController.update(delta);
     this.currSprite = this.animController.getSprite();
 
+    // flipping
+    this.flipX = this.direction != 1;
+
     // animation
     if(!this.grounded){
-      this.animController.setCurrent("Jump")
+      this.animController.setCurrent("Jump");
     }
     else if(this.velocity.x != 0){
       this.animController.setCurrent("Walk");
@@ -191,7 +198,10 @@ class BasicPlayerEntity extends PhysicalEntity{
 
     // shoot
     if(this.actionCooldown == 0 && this.inputDevice.primaryDown){
-      var projectile = new ProjectileEntity(this.direction * (PLAYER_SPEED + PLAYER_FIRE_SPEED));
+      var projectile = new ProjectileEntity(
+        this.projectileSprite,
+        this.direction * (PLAYER_SPEED + PLAYER_FIRE_SPEED)
+      );
   		projectile.setPosition(this.position.x, this.position.y);
   		this.projectileEntities.push(projectile);
 
@@ -221,7 +231,7 @@ class BasicPlayerEntity extends PhysicalEntity{
  * @extends PhysicalEntity
  */
 class EnemyEntity extends PhysicalEntity {
-
+  //TODO: write enemy
 }
 
 /**

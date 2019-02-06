@@ -29,15 +29,25 @@ class Sprite {
     this.h = h;
   }
 
-  render(context, camera, position){
+  render(context, camera, position, flipX, flipY){
+    context.save();
+
+    // move camera
+    context.translate(-camera.position.x, -camera.position.y);
+
+    // fix context for flipping
+    if(flipX) context.scale(-1, 1);
+    if(flipY) context.scale(1, -1);
+    
     context.drawImage(
       this.img,
       this.x, this.y,
       this.w, this.h,
-      position.x - camera.position.x,
-      position.y - camera.position.y,
+      flipX ? -position.x-this.w : position.x,
+      flipY ? -position.y-this.h : position.y,
       this.w, this.h
     );
+    context.restore();
   }
 }
 

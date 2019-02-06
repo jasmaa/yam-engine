@@ -38,7 +38,7 @@ function update(curr){
 	// draw to canvas
 	context.clearRect(0, 0, canvas.width, canvas.height);
 	context.fillText("FPS: " + (1 / delta * 1000), 10, 50);
-	context.fillText(engine.player.position.y, 10, 80);
+	context.fillText(engine.player.position.x, 10, 80);
 	renderer.render(engine, context);
 
 	window.requestAnimationFrame(update);
